@@ -16,8 +16,8 @@ OPTIONS:
         --features <FEATURES>      Space-separated list of features to activate
         --each-feature             Perform for each feature which includes --no-default-features flag and default features of the package
         --feature-powerset         Perform for the feature powerset which includes --no-default-features flag and default features of the package
-        --optional-deps            Use optional dependencies as features
         --skip <FEATURES>          Space-separated list of features to skip
+        --skip-optional-deps       Do not use optional dependencies as features
         --skip-no-default-features Skip run of just --no-default-features flag
         --no-dev-deps              Perform without dev-dependencies
         --remove-dev-deps          Equivalent to --no-dev-deps flag except for does not restore the original `Cargo.toml` after performed

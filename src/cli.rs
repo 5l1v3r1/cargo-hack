@@ -28,11 +28,11 @@ const HELP: &[(&str, &str, &str, &[&str])] = &[
         "Perform for the feature powerset which includes --no-default-features flag and default features of the package",
         &[],
     ),
-    ("", "--optional-deps", "Use optional dependencies as features", &[
-        "This flag can only be used with either --each-feature flag or --feature-powerset flag.",
-    ]),
     ("", "--skip <FEATURES>", "Space-separated list of features to skip", &[
         "To skip run of default feature, using value `--skip default`.",
+        "This flag can only be used with either --each-feature flag or --feature-powerset flag.",
+    ]),
+    ("", "--skip-optional-deps", "Do not use optional dependencies as features", &[
         "This flag can only be used with either --each-feature flag or --feature-powerset flag.",
     ]),
     ("", "--skip-no-default-features", "Skip run of just --no-default-features flag", &[
@@ -72,8 +72,12 @@ struct Help {
 }
 
 impl Help {
-    fn new(long: bool) -> Self {
-        Self { long, term_size: term_size::dimensions().map_or(120, |(w, _)| w) }
+    fn short() -> Self {
+        Self { long: false, term_size: term_size::dimensions().map_or(120, |(w, _)| w) }
+    }
+
+    fn long() -> Self {
+        Self { long: true, term_size: term_size::dimensions().map_or(120, |(w, _)| w) }
     }
 }
 
@@ -182,8 +186,8 @@ pub(crate) struct Args {
     pub(crate) ignore_private: bool,
     /// --ignore-unknown-features, (--ignore-non-exist-features)
     pub(crate) ignore_unknown_features: bool,
-    /// --optional-deps
-    pub(crate) optional_deps: bool,
+    /// --skip-optional-deps
+    pub(crate) skip_optional_deps: bool,
     /// --skip-no-default-features
     pub(crate) skip_no_default_features: bool,
     /// --clean-per-run
@@ -242,7 +246,7 @@ pub(crate) fn args(coloring: &mut Option<Coloring>) -> Result<Option<Args>> {
     match &args.next() {
         Some(a) if a == "hack" => {}
         Some(_) | None => {
-            println!("{}", Help::new(false));
+            println!("{}", Help::short());
             return Ok(None);
         }
     }
@@ -267,6 +271,7 @@ pub(crate) fn args(coloring: &mut Option<Coloring>) -> Result<Option<Args>> {
     let mut ignore_unknown_features = false;
     let mut ignore_non_exist_features = false;
     let mut optional_deps = false;
+    let mut skip_optional_deps = false;
     let mut skip_no_default_features = false;
     let mut clean_per_run = false;
 
@@ -389,6 +394,7 @@ pub(crate) fn args(coloring: &mut Option<Coloring>) -> Result<Option<Args>> {
                 "--feature-powerset" => parse_flag!(feature_powerset),
                 "--ignore-private" => parse_flag!(ignore_private),
                 "--optional-deps" => parse_flag!(optional_deps),
+                "--skip-optional-deps" => parse_flag!(skip_optional_deps),
                 "--skip-no-default-features" => parse_flag!(skip_no_default_features),
                 "--clean-per-run" => parse_flag!(clean_per_run),
                 "--ignore-unknown-features" => {
@@ -419,10 +425,10 @@ pub(crate) fn args(coloring: &mut Option<Coloring>) -> Result<Option<Args>> {
     if leading.is_empty() && !remove_dev_deps
         || subcommand.is_none() && leading.iter().any(|a| a == "-h")
     {
-        println!("{}", Help::new(false));
+        println!("{}", Help::short());
         return Ok(None);
     } else if subcommand.is_none() && leading.iter().any(|a| a == "--help") {
-        println!("{}", Help::new(true));
+        println!("{}", Help::long());
         return Ok(None);
     } else if leading.iter().any(|a| a == "--version" || a == "-V" || a == "-vV" || a == "-Vv") {
         print_version();
@@ -526,7 +532,7 @@ For more information try --help
         remove_dev_deps,
         ignore_private,
         ignore_unknown_features: ignore_unknown_features || ignore_non_exist_features,
-        optional_deps,
+        skip_optional_deps,
         skip_no_default_features,
         clean_per_run,
 

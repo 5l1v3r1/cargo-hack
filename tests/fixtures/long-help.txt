@@ -32,15 +32,15 @@ OPTIONS:
         --feature-powerset
             Perform for the feature powerset which includes --no-default-features flag and default features of the package.
 
-        --optional-deps
-            Use optional dependencies as features.
-
-            This flag can only be used with either --each-feature flag or --feature-powerset flag.
-
         --skip <FEATURES>
             Space-separated list of features to skip.
 
             To skip run of default feature, using value `--skip default`.
+
+            This flag can only be used with either --each-feature flag or --feature-powerset flag.
+
+        --skip-optional-deps
+            Do not use optional dependencies as features.
 
             This flag can only be used with either --each-feature flag or --feature-powerset flag.
 

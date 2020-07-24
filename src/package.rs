@@ -61,7 +61,7 @@ impl<'a> Kind<'a> {
 
         let features =
             package.features.keys().filter(|f| *f != "default" && !args.skip.contains(f));
-        let opt_deps = if args.optional_deps {
+        let opt_deps = if !args.skip_optional_deps {
             Some(
                 package
                     .dependencies
